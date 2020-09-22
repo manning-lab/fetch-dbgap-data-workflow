@@ -59,10 +59,10 @@ task decrypt {
 	Int? disk
 
 	command <<<
-			mkdir data_dir && \
-			mv -t data_dir ${sep=' ' encrypted_files} \
-				&& vdb-decrypt --ngc ${key} data_dir && \
-				find data_dir -mindepth 2 -type f -exec mv -i '{}' data_dir ';'
+		mkdir data_dir \
+			&& mv -t data_dir "${sep='" "' encrypted_files}" \
+			&& vdb-decrypt --ngc ${key} data_dir \
+			&& find data_dir -mindepth 2 -type f -exec mv -i '{}' data_dir ';'
 	>>>
 
 	runtime {
