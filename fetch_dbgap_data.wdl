@@ -38,8 +38,8 @@ task download {
 			-QTr -l 300M -k 1 \
 			-i /home/aspera/.aspera/cli/etc/asperaweb_id_dsa.openssh \
 			-W ${token_string} dbtest@gap-upload.ncbi.nlm.nih.gov:data/instant/${downloader}/${download_request_num} \
-			. && \
-			find ${download_request_num} -mindepth 2 -type f -exec mv -i '{}' ${download_request_num} ';'
+			. \
+			&& find ${download_request_num} -mindepth 2 -type f -exec mv -i '{}' ${download_request_num} ';'
 	>>>
 
 	runtime {
@@ -61,8 +61,7 @@ task decrypt {
 	command <<<
 		mkdir data_dir \
 			&& mv -t data_dir "${sep='" "' encrypted_files}" \
-			&& vdb-decrypt --ngc ${key} data_dir \
-			&& find data_dir -mindepth 2 -type f -exec mv -i '{}' data_dir ';'
+			&& vdb-decrypt --ngc ${key} data_dir
 	>>>
 
 	runtime {
