@@ -61,6 +61,6 @@ task decrypt {
 	}
 
 	output {
-		File decrypted_dir = "data_dir"
+		Array[File] decrypted_files = glob("data_dir/*")
 	}
 }
