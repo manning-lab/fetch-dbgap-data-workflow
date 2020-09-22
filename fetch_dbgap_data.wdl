@@ -3,7 +3,7 @@ workflow fetch_dbgap {
 	String download_request_num
 	String downloader
 	String token_string
-	String key
+	File key
 	
 	call download {
 		input:
@@ -19,7 +19,7 @@ workflow fetch_dbgap {
 	}
 
 	output {
-		File data_dir = decrypt.decrypted_dir
+		Array[File] data_dir = decrypt.decrypted_files
 	}
 }
 
@@ -51,10 +51,11 @@ task decrypt {
 	File encrypted_dir
 	File key
 
-	command {
+	command <<<
 			cp -r ${encrypted_dir} data_dir \
-				&& vdb-decrypt --ngc ${key} data_dir
-	}
+				&& vdb-decrypt --ngc ${key} data_dir && \
+				find data_dir -mindepth 2 -type f -exec mv -i '{}' data_dir ';'
+	>>>
 
 	runtime {
 		docker: "quay.io/kwesterman/fetch-dbgap-data-workflow"
