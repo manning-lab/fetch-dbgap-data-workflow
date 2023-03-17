@@ -14,10 +14,16 @@ RUN wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.10.8/sratoolkit.2.10.8-ubu
 ENV PATH="/sratoolkit.2.10.8-ubuntu64/bin:${PATH}"
 
 
+# Configure environment
+#RUN mkdir /root/.ncbi
+COPY ncbi_config /root/.ncbi/user-settings.mkfg
+#RUN echo "Aexyo" | sratoolkit.2.10.8-ubuntu64/bin/vdb-config -i
+
+
 # Install newer version of aspera
-RUN wget https://d3gcli72yxqn2z.cloudfront.net/connect_latest/v4/bin/ibm-aspera-connect-3.11.2.63-linux-g2.12-64.tar.gz \
-	&& tar zxvf ibm-aspera-connect-3.11.2.63-linux-g2.12-64.tar.gz
+RUN wget https://d3gcli72yxqn2z.cloudfront.net/downloads/connect/latest/bin/ibm-aspera-connect_4.2.4.265_linux.tar.gz \
+	&& tar zxvf ibm-aspera-connect_4.2.4.265_linux.tar.gz
 USER aspera
-RUN ./ibm-aspera-connect-3.11.2.63-linux-g2.12-64.sh
+RUN  ./ibm-aspera-connect_4.2.4.265_linux.sh
 
 USER root
