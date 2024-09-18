@@ -1,23 +1,21 @@
-FROM ibmcom/aspera-cli:3.9
+FROM ubuntu:latest
 
 USER root
 
-# Install wget
-RUN sed -i 's/archive/old-releases/g' /etc/apt/sources.list  # Allows apt-get update to function with older Ubuntu version
-RUN apt-get update; exit 0  # Update step throws unimportant error --> exit 0 to avoid
-RUN apt-get install -y wget  
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    tar \
+    gnupg \
+    glibc-tools \
+    libglib2.0-0t64 \
+    openssl \
+    libc6
 
+USER ubuntu
+# Copy and install Aspera CLI from the current directory
+COPY ibm-aspera-connect_4.2.12.780_linux_x86_64.tar.gz /tmp/aspera-cli.tar.gz
+RUN tar zxvf /tmp/aspera-cli.tar.gz -C /tmp
+#    /tmp/ibm-aspera-connect-4.2.12.780-linux-x86_64.sh
 
-# Download SRA toolkit and add to path
-RUN wget https://ftp-trace.ncbi.nlm.nih.gov/sra/sdk/2.10.8/sratoolkit.2.10.8-ubuntu64.tar.gz \
-	&& tar xvzf sratoolkit.2.10.8-ubuntu64.tar.gz
-ENV PATH="/sratoolkit.2.10.8-ubuntu64/bin:${PATH}"
-
-
-# Install newer version of aspera
-RUN wget https://d3gcli72yxqn2z.cloudfront.net/connect_latest/v4/bin/ibm-aspera-connect-3.11.2.63-linux-g2.12-64.tar.gz \
-	&& tar zxvf ibm-aspera-connect-3.11.2.63-linux-g2.12-64.tar.gz
-USER aspera
-RUN ./ibm-aspera-connect-3.11.2.63-linux-g2.12-64.sh
-
-USER root
+# Set the default command to run bash
+CMD ["bash"]
