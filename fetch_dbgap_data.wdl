@@ -3,6 +3,7 @@ workflow fetch_dbgap {
 	String download_request_num
 	String downloader
 	String token_string
+	String ASPERA_SCP_PASS
 	File key
 	Int? disk
 	
@@ -11,6 +12,7 @@ workflow fetch_dbgap {
 			download_request_num = download_request_num,
 			downloader = downloader,
 			token_string = token_string,
+			ASPERA_SCP_PASS = ASPERA_SCP_PASS,
 			disk = disk
 	}
 	
@@ -31,19 +33,20 @@ task download {
 	String download_request_num
 	String downloader
 	String token_string
+	String ASPERA_SCP_PASS
 	Int? disk
 
 	command <<<
-		ascp \
+		export ASPERA_SCP_PASS="${ASPERA_SCP_PASS}" && /home/ubuntu/.aspera/connect/bin/ascp \
 			-QTr -l 300M -k 1 \
-			-i /home/aspera/.aspera/cli/etc/asperaweb_id_dsa.openssh \
+			-i /home/aspera/.aspera/cli/etc/aspera_tokenauth_id_rsa \
 			-W ${token_string} dbtest@gap-upload.ncbi.nlm.nih.gov:data/instant/${downloader}/${download_request_num} \
 			. \
 			&& find ${download_request_num} -mindepth 2 -type f -exec mv -i '{}' ${download_request_num} ';'
 	>>>
 
 	runtime {
-		docker: "quay.io/kwesterman/fetch-dbgap-data-workflow"
+		docker: "manninglab/fetch-dbgap-data-workflow:v3"
 		disks: "local-disk " + select_first([disk,"100"]) + " HDD"
 	}
 
@@ -61,11 +64,11 @@ task decrypt {
 	command <<<
 		mkdir data_dir \
 			&& mv -t data_dir "${sep='" "' encrypted_files}" \
-			&& vdb-decrypt --ngc ${key} data_dir
+			&& /home/ubuntu/sratoolkit.3.2.0-ubuntu64/bin/vdb-decrypt --ngc ${key} data_dir
 	>>>
 
 	runtime {
-		docker: "quay.io/kwesterman/fetch-dbgap-data-workflow"
+		docker: "manninglab/fetch-dbgap-data-workflow:v3"
 		disks: "local-disk " + select_first([disk,"100"]) + " HDD"
 	}
 
