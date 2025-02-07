@@ -39,14 +39,14 @@ task download {
 	command <<<
 		export ASPERA_SCP_PASS="${ASPERA_SCP_PASS}" && /home/ubuntu/.aspera/connect/bin/ascp \
 			-QTr -l 300M -k 1 \
-			-i /home/aspera/.aspera/cli/etc/aspera_tokenauth_id_rsa \
+			-i /home/ubuntu/.aspera/connect/etc/aspera_tokenauth_id_rsa \
 			-W ${token_string} dbtest@gap-upload.ncbi.nlm.nih.gov:data/instant/${downloader}/${download_request_num} \
 			. \
 			&& find ${download_request_num} -mindepth 2 -type f -exec mv -i '{}' ${download_request_num} ';'
 	>>>
 
 	runtime {
-		docker: "manninglab/fetch-dbgap-data-workflow:v3"
+		docker: "docker.io/manninglab/fetch_dbgap_data:v3@sha256:d8605492e09f3dc1d827a0eb5085aa7a82bf23069d0798c28e850cd4e5ac5253"
 		disks: "local-disk " + select_first([disk,"100"]) + " HDD"
 	}
 
@@ -62,13 +62,15 @@ task decrypt {
 	Int? disk
 
 	command <<<
-		mkdir data_dir \
-			&& mv -t data_dir "${sep='" "' encrypted_files}" \
-			&& /home/ubuntu/sratoolkit.3.2.0-ubuntu64/bin/vdb-decrypt --ngc ${key} data_dir
+		mkdir data_dir
+        ls -l
+        ls -l "${sep='" "' encrypted_files}"
+		mv -t data_dir "${sep='" "' encrypted_files}"
+		/home/ubuntu/sratoolkit.3.2.0-ubuntu64/bin/vdb-decrypt --ngc ${key} data_dir
 	>>>
 
 	runtime {
-		docker: "manninglab/fetch-dbgap-data-workflow:v3"
+		docker: "docker.io/manninglab/fetch_dbgap_data:v3@sha256:d8605492e09f3dc1d827a0eb5085aa7a82bf23069d0798c28e850cd4e5ac5253"
 		disks: "local-disk " + select_first([disk,"100"]) + " HDD"
 	}
 
