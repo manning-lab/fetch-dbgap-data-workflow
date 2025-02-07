@@ -65,8 +65,8 @@ task decrypt {
 		mkdir data_dir
         ls -l
         ls -l "${sep='" "' encrypted_files}"
-		mv -t data_dir "${sep='" "' encrypted_files}"
-		/home/ubuntu/sratoolkit.3.2.0-ubuntu64/bin/vdb-decrypt --ngc ${key} data_dir
+	cp "${sep='" "' encrypted_files}" data_dir
+	/home/ubuntu/sratoolkit.3.2.0-ubuntu64/bin/vdb-decrypt --ngc ${key} data_dir
 	>>>
 
 	runtime {
