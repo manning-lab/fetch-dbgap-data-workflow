@@ -1,4 +1,4 @@
-Workflow for downloading datasets from dbGaP and decrypting using the SRA toolkit.  
+Workflow for downloading datasets from the dbGaP Exchange Areas (we use this for our TOPMed projects) and decrypting using the SRA toolkit.  
 
 Required inputs:
 * download_request_num: dbGaP download request ID (5-digit number)
